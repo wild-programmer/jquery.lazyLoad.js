@@ -1,19 +1,18 @@
-(function ($) {
+(function($) {
 
-    $.fn.lazyLoad = function (options) {
+    $.fn.lazyLoad = function(options) {
         var defaults = {
             offset: 100,
         }
 
         // 参数扩展
         defaults = $.extend(defaults, options);
-
         var _this = $(this),
             list = [],
             offset = defaults.offset;
 
         // 避免重复查询DOM
-        _this.each(function () {
+        _this.each(function() {
             list.push(this);
         });
 
@@ -25,32 +24,33 @@
         // 是否进入可视区
         function inView(el) {
             var scrollTop = $(window).scrollTop(),
+                /* 屏幕滚动的高度 */
                 winHeight = $(window).height(),
+                /* 整个文档的高度 */
                 offsetParent = el.offsetParent,
-                offsetTop = offsetParent.offsetTop;
+                /* 父级定位元素 */
+                offsetTop = offsetParent.offsetTop; /* el父元素距离顶部的距离 */
 
             // 遍历计算距离body顶部高度
-            while(offsetParent = offsetParent.offsetParent) {
+            while (offsetParent = offsetParent.offsetParent) {
                 offsetTop += offsetParent.offsetTop;
             }
-
             return offsetTop - winHeight - scrollTop < offset;
         }
 
         // 加载图片
         function pollImages() {
-            for(var i=list.length; i>=0; i--) {
+            for (var i = list.length - 1; i >= 0; i--) {
                 var self = list[i];
+                if (!isDeal(self) && inView(self)) {
 
-                if(!isDeal(self) && inView(self)) {
-                
                     // 修改正确的图片路径
                     $(self).attr({
                         src: $(self).attr('data-src')
                     });
 
                     // 渐现特效
-                    $(self).on('load', function () {
+                    $(self).on('load', function() {
                         $(this).hide().fadeIn();
                     });
 
